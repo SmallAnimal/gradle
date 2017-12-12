@@ -105,7 +105,7 @@ public class DefaultMavenModuleResolveMetadata extends AbstractModuleComponentRe
     }
 
     private boolean isJavaLibrary() {
-        return experimentalFeatures.isEnabled() && "jar".equals(packaging);
+        return "jar".equals(packaging);
     }
 
     private ImmutableList<? extends ModuleComponentArtifactMetadata> getArtifactsForConfiguration(String name) {
