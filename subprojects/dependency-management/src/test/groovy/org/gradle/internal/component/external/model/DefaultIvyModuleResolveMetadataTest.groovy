@@ -19,6 +19,7 @@ package org.gradle.internal.component.external.model
 import com.google.common.collect.ImmutableListMultimap
 import org.gradle.api.artifacts.ModuleVersionIdentifier
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.DefaultModuleIdentifier
 import org.gradle.api.internal.artifacts.dependencies.DefaultMutableVersionConstraint
 import org.gradle.internal.component.external.descriptor.Artifact
@@ -27,6 +28,8 @@ import org.gradle.internal.component.external.descriptor.DefaultExclude
 import org.gradle.internal.component.model.DefaultIvyArtifactName
 import org.gradle.internal.component.model.DependencyMetadata
 import org.gradle.internal.component.model.Exclude
+import org.gradle.util.TestUtil
+import spock.lang.Unroll
 
 import static org.gradle.internal.component.external.model.DefaultModuleComponentSelector.newSelector
 
@@ -34,7 +37,7 @@ class DefaultIvyModuleResolveMetadataTest extends AbstractModuleComponentResolve
     @Override
     AbstractModuleComponentResolveMetadata createMetadata(ModuleComponentIdentifier id, List<Configuration> configurations, List<DependencyMetadata> dependencies) {
         def metadata = new DefaultMutableIvyModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, configurations, dependencies, artifacts, excludes)
-        return metadata.asImmutable()
+        return metadata.asImmutable(TestUtil.attributesFactory(), new ExperimentalFeatures())
     }
 
     List<Artifact> artifacts = []
@@ -103,19 +106,30 @@ class DefaultIvyModuleResolveMetadataTest extends AbstractModuleComponentResolve
         runtime.artifacts.is(runtime.artifacts)
     }
 
-    def "each configuration contains a single variant containing no attributes and the artifacts of the configuration"() {
+    @Unroll
+    def "the #config configuration contains a single variant containing no attributes and the artifacts of the configuration"() {
         given:
+        configuration("default")
+        configuration("master")
         configuration("runtime")
+        configuration("compile")
         artifact("one", ["runtime"])
-        artifact("two", ["runtime"])
+        artifact("two", ["runtime", "compile"])
 
         when:
-        def runtime = metadata.getConfiguration("runtime")
+        def configMetadata = metadata.getConfiguration(config)
 
         then:
-        runtime.variants.size() == 1
-        runtime.variants.first().attributes.empty
-        runtime.variants.first().artifacts*.name.name == ["one", "two"]
+        configMetadata.variants.size() == 1
+        configMetadata.variants.first().attributes.empty
+        configMetadata.variants.first().artifacts == configMetadata.artifacts
+
+        where:
+        config     | _
+        "compile"  | _
+        "runtime"  | _
+        "default"  | _
+        "master"   | _
     }
 
     def "artifacts include union of those inherited from other configurations"() {

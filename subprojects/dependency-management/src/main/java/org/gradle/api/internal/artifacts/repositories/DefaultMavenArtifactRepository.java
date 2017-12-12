@@ -41,6 +41,7 @@ import org.gradle.api.internal.artifacts.repositories.resolver.ExternalResourceA
 import org.gradle.api.internal.artifacts.repositories.resolver.MavenResolver;
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransport;
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransportFactory;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactMetadata;
@@ -77,6 +78,7 @@ public class DefaultMavenArtifactRepository extends AbstractAuthenticationSuppor
     private final FileResourceRepository fileResourceRepository;
     private final ExperimentalFeatures experimentalFeatures;
     private final MavenMetadataSources metadataSources = new MavenMetadataSources();
+    private final ImmutableAttributesFactory immutableAttributesFactory;
 
     public DefaultMavenArtifactRepository(FileResolver fileResolver, RepositoryTransportFactory transportFactory,
                                           LocallyAvailableResourceFinder<ModuleComponentArtifactMetadata> locallyAvailableResourceFinder,
@@ -88,10 +90,12 @@ public class DefaultMavenArtifactRepository extends AbstractAuthenticationSuppor
                                           ImmutableModuleIdentifierFactory moduleIdentifierFactory,
                                           FileStore<String> resourcesFileStore,
                                           FileResourceRepository fileResourceRepository,
-                                          ExperimentalFeatures experimentalFeatures) {
+                                          ExperimentalFeatures experimentalFeatures,
+                                          ImmutableAttributesFactory immutableAttributesFactory) {
         this(new DefaultDescriber(), fileResolver, transportFactory, locallyAvailableResourceFinder, instantiatorFactory,
             artifactFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory,
-            resourcesFileStore, fileResourceRepository, experimentalFeatures);
+            resourcesFileStore, fileResourceRepository, experimentalFeatures,
+            immutableAttributesFactory);
     }
 
     public DefaultMavenArtifactRepository(Transformer<String, MavenArtifactRepository> describer,
@@ -105,7 +109,8 @@ public class DefaultMavenArtifactRepository extends AbstractAuthenticationSuppor
                                           ImmutableModuleIdentifierFactory moduleIdentifierFactory,
                                           FileStore<String> resourcesFileStore,
                                           FileResourceRepository fileResourceRepository,
-                                          ExperimentalFeatures experimentalFeatures) {
+                                          ExperimentalFeatures experimentalFeatures,
+                                          ImmutableAttributesFactory immutableAttributesFactory) {
         super(instantiatorFactory.decorate(), authenticationContainer);
         this.describer = describer;
         this.fileResolver = fileResolver;
@@ -119,6 +124,7 @@ public class DefaultMavenArtifactRepository extends AbstractAuthenticationSuppor
         this.fileResourceRepository = fileResourceRepository;
         this.experimentalFeatures = experimentalFeatures;
         this.metadataSources.setDefaults(experimentalFeatures);
+        this.immutableAttributesFactory = immutableAttributesFactory;
     }
 
     @Override
@@ -188,7 +194,8 @@ public class DefaultMavenArtifactRepository extends AbstractAuthenticationSuppor
     private MavenResolver createResolver(URI rootUri) {
         RepositoryTransport transport = getTransport(rootUri.getScheme());
         ImmutableMetadataSources metadataSources = createMetadataSources();
-        return new MavenResolver(getName(), rootUri, transport, locallyAvailableResourceFinder, artifactFileStore, moduleIdentifierFactory, transport.getResourceAccessor(), resourcesFileStore, metadataSources, MavenMetadataArtifactProvider.INSTANCE);
+        return new MavenResolver(getName(), rootUri, transport, locallyAvailableResourceFinder, artifactFileStore, moduleIdentifierFactory, transport.getResourceAccessor(), resourcesFileStore, metadataSources, MavenMetadataArtifactProvider.INSTANCE,
+            immutableAttributesFactory, experimentalFeatures);
     }
 
     @Override

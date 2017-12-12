@@ -46,7 +46,7 @@ class DefaultMavenArtifactRepositoryTest extends Specification {
     final ImmutableModuleIdentifierFactory moduleIdentifierFactory = Stub()
 
     final DefaultMavenArtifactRepository repository = new DefaultMavenArtifactRepository(
-        resolver, transportFactory, locallyAvailableResourceFinder, TestUtil.instantiatorFactory(), artifactIdentifierFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory, externalResourceFileStore, Mock(FileResourceRepository), new ExperimentalFeatures())
+        resolver, transportFactory, locallyAvailableResourceFinder, TestUtil.instantiatorFactory(), artifactIdentifierFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory, externalResourceFileStore, Mock(FileResourceRepository), new ExperimentalFeatures(), TestUtil.attributesFactory())
 
     def "creates local repository"() {
         given:

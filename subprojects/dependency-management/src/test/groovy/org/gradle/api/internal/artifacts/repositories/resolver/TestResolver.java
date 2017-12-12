@@ -17,6 +17,7 @@
 package org.gradle.api.internal.artifacts.repositories.resolver;
 
 import org.gradle.api.artifacts.ComponentMetadataSupplier;
+import org.gradle.api.internal.ExperimentalFeatures;
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory;
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ModuleComponentRepositoryAccess;
 import org.gradle.api.internal.artifacts.repositories.metadata.ImmutableMetadataSources;
@@ -34,12 +35,13 @@ import org.gradle.internal.resource.ExternalResourceRepository;
 import org.gradle.internal.resource.local.FileStore;
 import org.gradle.internal.resource.local.LocallyAvailableResourceFinder;
 import org.gradle.internal.resource.transfer.CacheAwareExternalResourceAccessor;
+import org.gradle.util.TestUtil;
 
 public class TestResolver extends ExternalResourceResolver<ModuleComponentResolveMetadata, TestResolver.MutableTestResolveMetadata> {
     ExternalResourceArtifactResolver artifactResolver;
 
     protected TestResolver(String name, boolean local, ExternalResourceRepository repository, CacheAwareExternalResourceAccessor cachingResourceAccessor, VersionLister versionLister, LocallyAvailableResourceFinder<ModuleComponentArtifactMetadata> locallyAvailableResourceFinder, FileStore<ModuleComponentArtifactIdentifier> artifactFileStore, ImmutableModuleIdentifierFactory moduleIdentifierFactory, ImmutableMetadataSources metadataSources, MetadataArtifactProvider metadataArtifactProvider) {
-        super(name, local, repository, cachingResourceAccessor, versionLister, locallyAvailableResourceFinder, artifactFileStore, moduleIdentifierFactory, metadataSources, metadataArtifactProvider);
+        super(name, local, repository, cachingResourceAccessor, versionLister, locallyAvailableResourceFinder, artifactFileStore, moduleIdentifierFactory, metadataSources, metadataArtifactProvider, TestUtil.attributesFactory(), new ExperimentalFeatures());
     }
 
 

@@ -15,6 +15,8 @@
  */
 package org.gradle.api.internal.artifacts.ivyservice.modulecache;
 
+import org.gradle.api.internal.ExperimentalFeatures;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.internal.component.external.model.ModuleComponentResolveMetadata;
 import org.gradle.internal.component.external.model.MutableModuleComponentResolveMetadata;
 import org.gradle.internal.component.model.ModuleSource;
@@ -47,9 +49,9 @@ class ModuleMetadataCacheEntry {
         return type == TYPE_MISSING;
     }
 
-    protected ModuleComponentResolveMetadata configure(MutableModuleComponentResolveMetadata input) {
+    protected ModuleComponentResolveMetadata configure(MutableModuleComponentResolveMetadata input, ImmutableAttributesFactory immutableAttributesFactory, ExperimentalFeatures experimentalFeatures) {
         input.setChanging(isChanging);
         input.setSource(moduleSource);
-        return input.asImmutable();
+        return input.asImmutable(immutableAttributesFactory, experimentalFeatures);
     }
 }

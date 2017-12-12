@@ -19,18 +19,27 @@ package org.gradle.internal.component.external.model
 
 import org.gradle.api.artifacts.ModuleVersionIdentifier
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.attributes.Attribute
+import org.gradle.api.attributes.Usage
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.dependencies.DefaultMutableVersionConstraint
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory
 import org.gradle.internal.component.external.descriptor.Configuration
 import org.gradle.internal.component.external.descriptor.MavenScope
 import org.gradle.internal.component.model.DependencyMetadata
 import org.gradle.internal.component.model.ModuleSource
+import org.gradle.util.TestUtil
+import spock.lang.Unroll
 
 import static org.gradle.internal.component.external.model.DefaultModuleComponentSelector.newSelector
 
 class DefaultMavenModuleResolveMetadataTest extends AbstractModuleComponentResolveMetadataTest {
+    private final ImmutableAttributesFactory attributesFactory = TestUtil.attributesFactory()
+    private final experimentalFeatures = new ExperimentalFeatures()
+
     @Override
     AbstractModuleComponentResolveMetadata createMetadata(ModuleComponentIdentifier id, List<Configuration> configurations, List<DependencyMetadata> dependencies) {
-        return new DefaultMavenModuleResolveMetadata(new DefaultMutableMavenModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, dependencies))
+        return new DefaultMavenModuleResolveMetadata(new DefaultMutableMavenModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, dependencies), attributesFactory, experimentalFeatures)
     }
 
     def "builds and caches dependencies for a scope"() {
@@ -65,14 +74,49 @@ class DefaultMavenModuleResolveMetadataTest extends AbstractModuleComponentResol
         runtime.artifacts.is(runtime.artifacts)
     }
 
-    def "each configuration contains a single variant containing no attributes and the artifacts of the configuration"() {
+    @Unroll
+    def "the #config configuration contains a single variant containing no attributes and the artifacts of the configuration"() {
+        given:
+        experimentalFeatures.enable()
+
         when:
-        def runtime = metadata.getConfiguration("runtime")
+        def configMetadata = metadata.getConfiguration(config)
 
         then:
-        runtime.variants.size() == 1
-        runtime.variants.first().attributes.empty
-        runtime.variants.first().artifacts == runtime.artifacts
+        configMetadata.variants.size() == 1
+        configMetadata.variants.first().attributes.empty
+        configMetadata.variants.first().artifacts == configMetadata.artifacts
+
+        where:
+        config     | _
+        "master"   | _
+        "provided" | _
+        "test"     | _
+        "system"   | _
+        "sources"  | _
+        "javadoc"  | _
+        "optional" | _
+        "default"  | _
+    }
+
+    @Unroll
+    def "the #config configuration contains a single variant containing Java library attributes and the artifacts of the configuration"() {
+        given:
+        experimentalFeatures.enable()
+
+        when:
+        def configMetadata = metadata.getConfiguration(config)
+
+        then:
+        configMetadata.variants.size() == 1
+        configMetadata.variants.first().attributes.contains(Attribute.of(Usage.USAGE_ATTRIBUTE.name, String))
+        configMetadata.variants.first().attributes.getAttribute(Attribute.of(Usage.USAGE_ATTRIBUTE.name, String)) == usage
+        configMetadata.variants.first().artifacts == configMetadata.artifacts
+
+        where:
+        config     | usage
+        "compile"  | Usage.JAVA_API
+        "runtime"  | Usage.JAVA_RUNTIME
     }
 
     def "artifacts include union of those inherited from other configurations"() {
@@ -93,7 +137,7 @@ class DefaultMavenModuleResolveMetadataTest extends AbstractModuleComponentResol
         mutable.packaging = "other"
         mutable.relocated = true
         mutable.snapshotTimestamp = "123"
-        def metadata = mutable.asImmutable()
+        def metadata = mutable.asImmutable(attributesFactory, new ExperimentalFeatures())
 
         when:
         def copy = metadata.withSource(source)

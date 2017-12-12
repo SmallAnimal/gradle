@@ -63,7 +63,6 @@ import org.gradle.api.internal.artifacts.repositories.resolver.ExternalResourceA
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransport;
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransportFactory;
 import org.gradle.api.internal.artifacts.vcs.VcsDependencyResolver;
-import org.gradle.vcs.internal.VcsWorkingDirectoryRoot;
 import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.api.internal.file.FileLookup;
 import org.gradle.api.internal.file.TemporaryFileProvider;
@@ -103,6 +102,7 @@ import org.gradle.internal.service.ServiceRegistry;
 import org.gradle.util.BuildCommencedTimeProvider;
 import org.gradle.vcs.internal.VcsMappingFactory;
 import org.gradle.vcs.internal.VcsMappingsStore;
+import org.gradle.vcs.internal.VcsWorkingDirectoryRoot;
 import org.gradle.vcs.internal.VersionControlSystemFactory;
 
 import java.util.Collections;
@@ -183,14 +183,15 @@ class DependencyManagementBuildScopeServices {
         );
     }
 
-    ModuleMetaDataCache createModuleDescriptorCache(BuildCommencedTimeProvider timeProvider, CacheLockingManager cacheLockingManager, ArtifactCacheMetaData artifactCacheMetaData, ImmutableModuleIdentifierFactory moduleIdentifierFactory, ImmutableAttributesFactory attributesFactory) {
+    ModuleMetaDataCache createModuleDescriptorCache(BuildCommencedTimeProvider timeProvider, CacheLockingManager cacheLockingManager, ArtifactCacheMetaData artifactCacheMetaData, ImmutableModuleIdentifierFactory moduleIdentifierFactory, ImmutableAttributesFactory attributesFactory, ExperimentalFeatures experimentalFeatures) {
         return new DefaultModuleMetaDataCache(
             timeProvider,
             cacheLockingManager,
             artifactCacheMetaData,
             moduleIdentifierFactory,
             attributesFactory,
-            NamedObjectInstantiator.INSTANCE);
+            NamedObjectInstantiator.INSTANCE,
+            experimentalFeatures);
     }
 
     ArtifactAtRepositoryCachedArtifactIndex createArtifactAtRepositoryCachedResolutionIndex(BuildCommencedTimeProvider timeProvider, CacheLockingManager cacheLockingManager) {

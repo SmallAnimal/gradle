@@ -20,7 +20,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.internal.ExperimentalFeatures;
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.parser.GradlePomModuleDescriptorBuilder;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.internal.component.external.descriptor.Configuration;
 
 import javax.annotation.Nullable;
@@ -62,8 +64,8 @@ public class DefaultMutableMavenModuleResolveMetadata extends AbstractMutableMod
     }
 
     @Override
-    public MavenModuleResolveMetadata asImmutable() {
-        return new DefaultMavenModuleResolveMetadata(this);
+    public MavenModuleResolveMetadata asImmutable(ImmutableAttributesFactory immutableAttributesFactory, ExperimentalFeatures experimentalFeatures) {
+        return new DefaultMavenModuleResolveMetadata(this, immutableAttributesFactory, experimentalFeatures);
     }
 
     @Override

@@ -45,6 +45,10 @@ abstract class AbstractModuleDependencyResolveTest extends AbstractHttpDependenc
         GradleMetadataResolveRunner.isExperimentalResolveBehaviorEnabled()
     }
 
+    boolean usesJavaLibraryVariants() {
+        GradleMetadataResolveRunner.isGradleMetadataEnabled() || (useMaven() && isExperimentalEnabled())
+    }
+
     String getTestConfiguration() { 'conf' }
 
     String getRootProjectName() { 'test' }
@@ -110,7 +114,7 @@ abstract class AbstractModuleDependencyResolveTest extends AbstractHttpDependenc
 
     def setup() {
         resolve = new ResolveTestFixture(buildFile, testConfiguration)
-        resolve.expectDefaultConfiguration(GradleMetadataResolveRunner.isGradleMetadataEnabled() ? "runtime" : "default")
+        resolve.expectDefaultConfiguration(usesJavaLibraryVariants() ? "runtime" : "default")
         settingsFile << "rootProject.name = '$rootProjectName'"
         if (GradleMetadataResolveRunner.experimentalResolveBehaviorEnabled) {
             ExperimentalFeaturesFixture.enable(settingsFile)

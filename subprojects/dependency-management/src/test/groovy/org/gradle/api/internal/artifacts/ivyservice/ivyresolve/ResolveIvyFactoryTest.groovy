@@ -17,6 +17,7 @@
 package org.gradle.api.internal.artifacts.ivyservice.ivyresolve
 
 import com.google.common.collect.Lists
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.ComponentMetadataProcessor
 import org.gradle.api.internal.artifacts.ComponentSelectionRulesInternal
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory
@@ -27,9 +28,9 @@ import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionC
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionSelectorScheme
 import org.gradle.api.internal.artifacts.ivyservice.modulecache.ModuleArtifactsCache
 import org.gradle.api.internal.artifacts.ivyservice.modulecache.ModuleMetaDataCache
+import org.gradle.api.internal.artifacts.repositories.ResolutionAwareRepository
 import org.gradle.api.internal.artifacts.repositories.metadata.ImmutableMetadataSources
 import org.gradle.api.internal.artifacts.repositories.metadata.MetadataArtifactProvider
-import org.gradle.api.internal.artifacts.repositories.ResolutionAwareRepository
 import org.gradle.api.internal.artifacts.repositories.resolver.ExternalResourceResolver
 import org.gradle.api.internal.artifacts.repositories.resolver.VersionLister
 import org.gradle.internal.component.external.model.ModuleComponentArtifactMetadata
@@ -39,6 +40,7 @@ import org.gradle.internal.resource.local.FileStore
 import org.gradle.internal.resource.local.LocallyAvailableResourceFinder
 import org.gradle.internal.resource.transfer.CacheAwareExternalResourceAccessor
 import org.gradle.util.BuildCommencedTimeProvider
+import org.gradle.util.TestUtil
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -134,7 +136,8 @@ class ResolveIvyFactoryTest extends Specification {
                 artifactFileStore,
                 moduleIdentifierFactory,
                 metadataSources,
-                Stub(MetadataArtifactProvider)
+                Stub(MetadataArtifactProvider),
+                TestUtil.attributesFactory(), new ExperimentalFeatures()
             ]
         ) {
             appendId(_) >> { }

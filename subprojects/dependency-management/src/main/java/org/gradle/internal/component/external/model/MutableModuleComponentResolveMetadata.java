@@ -16,12 +16,14 @@
 package org.gradle.internal.component.external.model;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.DirectDependenciesMetadata;
 import org.gradle.api.artifacts.DependencyConstraintMetadata;
 import org.gradle.api.artifacts.DependencyConstraintsMetadata;
+import org.gradle.api.artifacts.DirectDependenciesMetadata;
 import org.gradle.api.artifacts.DirectDependencyMetadata;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.internal.ExperimentalFeatures;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.internal.component.model.ModuleSource;
 import org.gradle.internal.hash.HashValue;
 import org.gradle.internal.reflect.Instantiator;
@@ -44,7 +46,7 @@ public interface MutableModuleComponentResolveMetadata {
     /**
      * Creates an immutable copy of this meta-data.
      */
-    ModuleComponentResolveMetadata asImmutable();
+    ModuleComponentResolveMetadata asImmutable(ImmutableAttributesFactory immutableAttributesFactory, ExperimentalFeatures experimentalFeatures);
 
     /**
      * Sets the component id and legacy module version id

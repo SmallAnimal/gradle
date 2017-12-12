@@ -41,7 +41,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         def metadata = new DefaultMutableMavenModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, [])
 
         expect:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.configurationNames == ["compile", "runtime", "test", "provided", "system", "optional", "master", "default", "javadoc", "sources"] as Set
         immutable.getConfiguration("compile").hierarchy == ["compile"]
         immutable.getConfiguration("runtime").hierarchy == ["runtime", "compile"]
@@ -61,7 +61,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         !metadata.relocated
         metadata.snapshotTimestamp == null
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         !immutable.missing
         immutable.packaging == 'jar'
         !immutable.relocated
@@ -88,7 +88,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         !metadata.relocated
 
         and:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable != metadata
         immutable.componentId == id
         immutable.source == null
@@ -114,7 +114,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         !copy.relocated
 
         and:
-        def immutable2 = copy.asImmutable()
+        def immutable2 = copy.asImmutable(attributesFactory, experimentalFeatures)
         immutable2.getConfiguration("compile").artifacts.size() == 1
         immutable2.getConfiguration("runtime").artifacts.size() == 1
         immutable2.getConfiguration("default").artifacts.size() == 1
@@ -153,7 +153,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         metadata.relocated
         metadata.contentHash == contentHash
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable != metadata
         immutable.componentId == newId
         immutable.id == DefaultModuleVersionIdentifier.newId(newId)
@@ -187,7 +187,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         def metadata = new DefaultMutableMavenModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, [])
 
         when:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         def copy = immutable.asMutable()
         copy.componentId = newId
         copy.source = source
@@ -197,7 +197,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         copy.snapshotTimestamp = "123"
         copy.packaging = "pom"
         copy.relocated = true
-        def immutableCopy = copy.asImmutable()
+        def immutableCopy = copy.asImmutable(attributesFactory, experimentalFeatures)
 
         then:
         metadata.componentId == id
@@ -236,7 +236,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         def metadata = new DefaultMutableMavenModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, [])
 
         when:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
 
         metadata.componentId = newId
         metadata.source = source
@@ -245,7 +245,7 @@ class DefaultMutableMavenModuleResolveMetadataTest extends AbstractMutableModule
         metadata.packaging = "pom"
         metadata.relocated = true
 
-        def immutableCopy = metadata.asImmutable()
+        def immutableCopy = metadata.asImmutable(attributesFactory, experimentalFeatures)
 
         then:
         metadata.componentId == newId

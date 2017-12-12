@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ComponentAttributeMatcher {
+public class    ComponentAttributeMatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentAttributeMatcher.class);
 
     /**

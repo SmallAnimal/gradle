@@ -21,7 +21,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.internal.ExperimentalFeatures;
 import org.gradle.api.internal.artifacts.ivyservice.NamespaceId;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.internal.component.external.descriptor.Artifact;
 import org.gradle.internal.component.external.descriptor.Configuration;
 import org.gradle.internal.component.model.DefaultIvyArtifactName;
@@ -129,7 +131,7 @@ public class DefaultMutableIvyModuleResolveMetadata extends AbstractMutableModul
     }
 
     @Override
-    public IvyModuleResolveMetadata asImmutable() {
+    public IvyModuleResolveMetadata asImmutable(ImmutableAttributesFactory immutableAttributesFactory, ExperimentalFeatures experimentalFeatures) {
         return new DefaultIvyModuleResolveMetadata(this);
     }
 

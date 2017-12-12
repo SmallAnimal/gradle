@@ -17,6 +17,7 @@
 package org.gradle.api.internal.artifacts.ivyservice.modulecache
 
 import org.apache.commons.io.output.ByteArrayOutputStream
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.DefaultImmutableModuleIdentifierFactory
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory
@@ -28,6 +29,7 @@ import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.parser.MetaDataPa
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.parser.ModuleMetadataParser
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.DefaultVersionSelectorScheme
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.MavenVersionSelectorScheme
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory
 import org.gradle.api.internal.file.TestFiles
 import org.gradle.api.internal.model.NamedObjectInstantiator
 import org.gradle.internal.component.external.model.DefaultModuleComponentIdentifier
@@ -47,6 +49,8 @@ import spock.lang.Unroll
 class ModuleMetadataSerializerTest extends Specification {
 
     private final ImmutableModuleIdentifierFactory moduleIdentifierFactory = new DefaultImmutableModuleIdentifierFactory()
+    private final ImmutableAttributesFactory attributesFactory = TestUtil.attributesFactory()
+    private final ExperimentalFeatures experimentalFeatures = new ExperimentalFeatures()
     private final ModuleMetadataSerializer serializer = moduleMetadataSerializer()
     private GradlePomModuleDescriptorParser pomModuleDescriptorParser = pomParser()
     private MetaDataParser<MutableIvyModuleResolveMetadata> ivyDescriptorParser = ivyParser()
@@ -60,8 +64,8 @@ class ModuleMetadataSerializerTest extends Specification {
         def bytes = serialize(metadata)
 
         when:
-        def deserializedMetadata = deserialize(bytes).asImmutable()
-        def originMetadata = metadata.asImmutable()
+        def deserializedMetadata = deserialize(bytes).asImmutable(attributesFactory, experimentalFeatures)
+        def originMetadata = metadata.asImmutable(attributesFactory, experimentalFeatures)
 
         then:
         deserializedMetadata == originMetadata
@@ -77,7 +81,7 @@ class ModuleMetadataSerializerTest extends Specification {
 
     private byte[] serialize(MutableModuleComponentResolveMetadata metadata) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        serializer.write(new OutputStreamBackedEncoder(baos), metadata.asImmutable())
+        serializer.write(new OutputStreamBackedEncoder(baos), metadata.asImmutable(attributesFactory, experimentalFeatures))
         baos.toByteArray()
     }
 

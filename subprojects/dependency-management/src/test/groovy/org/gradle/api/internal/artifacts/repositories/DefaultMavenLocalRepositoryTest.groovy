@@ -43,7 +43,7 @@ class DefaultMavenLocalRepositoryTest extends Specification {
     final ImmutableModuleIdentifierFactory moduleIdentifierFactory = Mock()
 
     final DefaultMavenArtifactRepository repository = new DefaultMavenLocalArtifactRepository(
-        resolver, transportFactory, locallyAvailableResourceFinder, TestUtil.instantiatorFactory(), artifactIdentifierFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory, Mock(FileResourceRepository), new ExperimentalFeatures())
+        resolver, transportFactory, locallyAvailableResourceFinder, TestUtil.instantiatorFactory(), artifactIdentifierFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory, Mock(FileResourceRepository), new ExperimentalFeatures(), TestUtil.attributesFactory())
     final ProgressLoggerFactory progressLoggerFactory = Mock()
 
     def "creates local repository"() {

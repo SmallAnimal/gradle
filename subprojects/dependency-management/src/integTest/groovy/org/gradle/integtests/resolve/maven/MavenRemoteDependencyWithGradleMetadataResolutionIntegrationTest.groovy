@@ -117,7 +117,7 @@ dependencies {
         then:
         resolve.expectGraph {
             root(":", ":test:") {
-                module("test:a:1.2")
+                module("test:a:1.2:runtime")
             }
         }
 

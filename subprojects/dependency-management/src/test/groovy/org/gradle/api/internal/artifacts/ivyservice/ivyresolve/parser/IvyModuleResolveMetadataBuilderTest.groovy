@@ -19,14 +19,19 @@ package org.gradle.api.internal.artifacts.ivyservice.ivyresolve.parser
 import org.apache.ivy.core.module.descriptor.Configuration
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.DefaultImmutableModuleIdentifierFactory
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory
 import org.gradle.internal.component.model.DefaultIvyArtifactName
 import org.gradle.internal.component.model.IvyArtifactName
+import org.gradle.util.TestUtil
 import spock.lang.Specification
 
 import static com.google.common.collect.Sets.newHashSet
 
 class IvyModuleResolveMetadataBuilderTest extends Specification {
+    private final ImmutableAttributesFactory attributesFactory = TestUtil.attributesFactory()
+    private final ExperimentalFeatures experimentalFeatures = new ExperimentalFeatures()
 
     def md = new DefaultModuleDescriptor(ModuleRevisionId.newInstance("org", "foo", "1.0"), "release", null)
     def moduleIdentifierFactory = new DefaultImmutableModuleIdentifierFactory()
@@ -39,7 +44,7 @@ class IvyModuleResolveMetadataBuilderTest extends Specification {
         when: meta.addArtifact(a, newHashSet("runtime"))
 
         then:
-        def artifacts = meta.build().asImmutable().getConfiguration("runtime").artifacts
+        def artifacts = meta.build().asImmutable(attributesFactory, experimentalFeatures).getConfiguration("runtime").artifacts
         artifacts.size() == 1
         artifacts[0].name.name == "foo"
         artifacts[0].name.type == "jar"
@@ -74,7 +79,7 @@ class IvyModuleResolveMetadataBuilderTest extends Specification {
         meta.addArtifact(a2, newHashSet("testUtil"))
 
         then:
-        def resolveMetaData = meta.build().asImmutable()
+        def resolveMetaData = meta.build().asImmutable(attributesFactory, experimentalFeatures)
         def runtimeArtifacts = resolveMetaData.getConfiguration("runtime").artifacts
         def testArtifacts = resolveMetaData.getConfiguration("testUtil").artifacts
 
@@ -95,7 +100,7 @@ class IvyModuleResolveMetadataBuilderTest extends Specification {
         meta.addArtifact(a2, newHashSet("runtime"))
 
         then:
-        def resolveMetaData = meta.build().asImmutable()
+        def resolveMetaData = meta.build().asImmutable(attributesFactory, experimentalFeatures)
         def runtimeArtifacts = resolveMetaData.getConfiguration("runtime").artifacts
         def archivesArtifacts = resolveMetaData.getConfiguration("archives").artifacts
 

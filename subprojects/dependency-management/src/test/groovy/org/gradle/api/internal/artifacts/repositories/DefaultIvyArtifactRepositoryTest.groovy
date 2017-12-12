@@ -53,7 +53,7 @@ class DefaultIvyArtifactRepositoryTest extends Specification {
     final ImmutableModuleIdentifierFactory moduleIdentifierFactory = Mock()
     final ModuleMetadataParser moduleMetadataParser = new ModuleMetadataParser(Mock(ImmutableAttributesFactory), moduleIdentifierFactory, Mock(NamedObjectInstantiator))
 
-    final DefaultIvyArtifactRepository repository = new DefaultIvyArtifactRepository(fileResolver, transportFactory, locallyAvailableResourceFinder, artifactIdentifierFileStore, externalResourceFileStore, authenticationContainer, ivyContextManager, moduleIdentifierFactory, TestUtil.instantiatorFactory(), Mock(FileResourceRepository), moduleMetadataParser, new ExperimentalFeatures())
+    final DefaultIvyArtifactRepository repository = new DefaultIvyArtifactRepository(fileResolver, transportFactory, locallyAvailableResourceFinder, artifactIdentifierFileStore, externalResourceFileStore, authenticationContainer, ivyContextManager, moduleIdentifierFactory, TestUtil.instantiatorFactory(), Mock(FileResourceRepository), moduleMetadataParser, new ExperimentalFeatures(), TestUtil.attributesFactory())
 
     def "default values"() {
         expect:

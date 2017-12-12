@@ -16,10 +16,11 @@
 package org.gradle.api.internal.artifacts.repositories.resolver
 
 import com.google.common.collect.ImmutableList
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory
-import org.gradle.api.internal.artifacts.repositories.metadata.MavenMetadataArtifactProvider
 import org.gradle.api.internal.artifacts.repositories.metadata.DefaultMavenPomMetadataSource
 import org.gradle.api.internal.artifacts.repositories.metadata.ImmutableMetadataSources
+import org.gradle.api.internal.artifacts.repositories.metadata.MavenMetadataArtifactProvider
 import org.gradle.api.internal.artifacts.repositories.metadata.MetadataArtifactProvider
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransport
 import org.gradle.internal.component.external.model.ComponentVariant
@@ -32,6 +33,7 @@ import org.gradle.internal.resource.local.FileResourceRepository
 import org.gradle.internal.resource.local.FileStore
 import org.gradle.internal.resource.local.LocallyAvailableResourceFinder
 import org.gradle.internal.resource.transfer.CacheAwareExternalResourceAccessor
+import org.gradle.util.TestUtil
 import spock.lang.Specification
 
 class MavenResolverTest extends Specification {
@@ -137,6 +139,7 @@ class MavenResolverTest extends Specification {
         }
 
 
-        new MavenResolver("repo", new URI("http://localhost"), Stub(RepositoryTransport), Stub(LocallyAvailableResourceFinder), Stub(FileStore), moduleIdentifierFactory, Stub(CacheAwareExternalResourceAccessor), Stub(FileStore), metadataSources, metadataArtifactProvider)
+        new MavenResolver("repo", new URI("http://localhost"), Stub(RepositoryTransport), Stub(LocallyAvailableResourceFinder), Stub(FileStore), moduleIdentifierFactory, Stub(CacheAwareExternalResourceAccessor), Stub(FileStore), metadataSources, metadataArtifactProvider,
+            TestUtil.attributesFactory(), new ExperimentalFeatures())
     }
 }

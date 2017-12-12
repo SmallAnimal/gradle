@@ -17,12 +17,14 @@
 package org.gradle.internal.component.external.model;
 
 import com.google.common.collect.ImmutableList;
+import org.gradle.api.internal.ExperimentalFeatures;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 
 import javax.annotation.Nullable;
 
 public interface MutableMavenModuleResolveMetadata extends MutableModuleComponentResolveMetadata, MutableComponentVariantResolveMetadata {
     @Override
-    MavenModuleResolveMetadata asImmutable();
+    MavenModuleResolveMetadata asImmutable(ImmutableAttributesFactory immutableAttributesFactory, ExperimentalFeatures experimentalFeatures);
 
     void setSnapshotTimestamp(@Nullable String snapshotTimestamp);
 

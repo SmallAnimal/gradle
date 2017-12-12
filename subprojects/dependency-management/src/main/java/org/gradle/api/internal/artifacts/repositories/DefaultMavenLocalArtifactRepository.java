@@ -29,6 +29,7 @@ import org.gradle.api.internal.artifacts.repositories.resolver.ExternalResourceA
 import org.gradle.api.internal.artifacts.repositories.resolver.MavenResolver;
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransport;
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransportFactory;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactMetadata;
@@ -46,6 +47,8 @@ public class DefaultMavenLocalArtifactRepository extends DefaultMavenArtifactRep
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenResolver.class);
 
     private final ImmutableModuleIdentifierFactory moduleIdentifierFactory;
+    private final ImmutableAttributesFactory immutableAttributesFactory;
+    private final ExperimentalFeatures experimentalFeatures;
 
     public DefaultMavenLocalArtifactRepository(FileResolver fileResolver, RepositoryTransportFactory transportFactory,
                                                LocallyAvailableResourceFinder<ModuleComponentArtifactMetadata> locallyAvailableResourceFinder, InstantiatorFactory instantiatorFactory,
@@ -55,9 +58,13 @@ public class DefaultMavenLocalArtifactRepository extends DefaultMavenArtifactRep
                                                AuthenticationContainer authenticationContainer,
                                                ImmutableModuleIdentifierFactory moduleIdentifierFactory,
                                                FileResourceRepository fileResourceRepository,
-                                               ExperimentalFeatures experimentalFeatures) {
-        super(fileResolver, transportFactory, locallyAvailableResourceFinder, instantiatorFactory, artifactFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory, null, fileResourceRepository, experimentalFeatures);
+                                               ExperimentalFeatures experimentalFeatures,
+                                               ImmutableAttributesFactory immutableAttributesFactory) {
+        super(fileResolver, transportFactory, locallyAvailableResourceFinder, instantiatorFactory, artifactFileStore, pomParser, metadataParser, authenticationContainer, moduleIdentifierFactory, null, fileResourceRepository, experimentalFeatures,
+            immutableAttributesFactory);
         this.moduleIdentifierFactory = moduleIdentifierFactory;
+        this.immutableAttributesFactory = immutableAttributesFactory;
+        this.experimentalFeatures = experimentalFeatures;
     }
 
     protected MavenResolver createRealResolver() {
@@ -77,7 +84,8 @@ public class DefaultMavenLocalArtifactRepository extends DefaultMavenArtifactRep
             transport.getResourceAccessor(),
             getResourcesFileStore(),
             createMetadataSources(),
-            MavenMetadataArtifactProvider.INSTANCE);
+            MavenMetadataArtifactProvider.INSTANCE,
+            immutableAttributesFactory, experimentalFeatures);
         for (URI repoUrl : getArtifactUrls()) {
             resolver.addArtifactLocation(repoUrl);
         }

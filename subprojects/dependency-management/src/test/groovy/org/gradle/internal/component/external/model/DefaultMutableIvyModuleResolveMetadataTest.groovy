@@ -62,7 +62,7 @@ class DefaultMutableIvyModuleResolveMetadataTest extends AbstractMutableModuleCo
         metadata.excludes.empty
 
         and:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable != metadata
         immutable.componentId == id
         immutable.source == null
@@ -104,7 +104,7 @@ class DefaultMutableIvyModuleResolveMetadataTest extends AbstractMutableModuleCo
         def metadata = new DefaultMutableIvyModuleResolveMetadata(null, id, configurations, [], [a1, a2, a3], [])
 
         expect:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.getConfiguration("compile").artifacts.name.name == ["two", "three"]
         immutable.getConfiguration("runtime").artifacts.name.name == ["one", "two", "three"]
     }
@@ -139,7 +139,7 @@ class DefaultMutableIvyModuleResolveMetadataTest extends AbstractMutableModuleCo
         metadata.contentHash == contentHash
         metadata.excludes == excludes
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable != metadata
         immutable.componentId == newId
         immutable.id == DefaultModuleVersionIdentifier.newId(newId)
@@ -173,12 +173,12 @@ class DefaultMutableIvyModuleResolveMetadataTest extends AbstractMutableModuleCo
 
         when:
         def metadata = new DefaultMutableIvyModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, [], [], [], [])
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         def copy = immutable.asMutable()
         copy.componentId = newId
         copy.source = source
         copy.statusScheme = ["2", "3"]
-        def immutableCopy = copy.asImmutable()
+        def immutableCopy = copy.asImmutable(attributesFactory, experimentalFeatures)
 
         then:
         metadata.componentId == id
@@ -205,13 +205,13 @@ class DefaultMutableIvyModuleResolveMetadataTest extends AbstractMutableModuleCo
 
         when:
         def metadata = new DefaultMutableIvyModuleResolveMetadata(Mock(ModuleVersionIdentifier), id, [], [], [], [])
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
 
         metadata.componentId = newId
         metadata.source = source
         metadata.statusScheme = ["1", "2"]
 
-        def immutableCopy = metadata.asImmutable()
+        def immutableCopy = metadata.asImmutable(attributesFactory, experimentalFeatures)
 
         then:
         metadata.componentId == newId

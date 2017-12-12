@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableListMultimap
 import org.gradle.api.artifacts.VersionConstraint
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.attributes.Attribute
+import org.gradle.api.internal.ExperimentalFeatures
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier
 import org.gradle.api.internal.artifacts.dependencies.DefaultMutableVersionConstraint
 import org.gradle.api.internal.attributes.ImmutableAttributes
@@ -34,6 +35,9 @@ import static org.gradle.internal.component.external.model.AbstractMutableModule
 import static org.gradle.internal.component.external.model.DefaultModuleComponentSelector.newSelector
 
 abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specification {
+    def attributesFactory = TestUtil.attributesFactory()
+    def experimentalFeatures = new ExperimentalFeatures()
+
     def id = DefaultModuleComponentIdentifier.newId("group", "module", "version")
     def configurations = []
     def dependencies = []
@@ -60,8 +64,8 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         expect:
         metadata.componentId == newId
         metadata.id == DefaultModuleVersionIdentifier.newId(newId)
-        metadata.asImmutable().componentId == newId
-        metadata.asImmutable().asMutable().componentId == newId
+        metadata.asImmutable(attributesFactory, experimentalFeatures).componentId == newId
+        metadata.asImmutable(attributesFactory, experimentalFeatures).asMutable().componentId == newId
     }
 
     def "can create default metadata"() {
@@ -76,7 +80,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         metadata.statusScheme == ComponentResolveMetadata.DEFAULT_STATUS_SCHEME
         metadata.contentHash == EMPTY_CONTENT
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.componentId == id
         !immutable.changing
         !immutable.missing
@@ -104,7 +108,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         metadata.contentHash = contentHash
 
         expect:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.changing
         immutable.missing
         immutable.status == "broken"
@@ -116,7 +120,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         copy.status == "broken"
         copy.contentHash == contentHash
 
-        def immutable2 = copy.asImmutable()
+        def immutable2 = copy.asImmutable(attributesFactory, experimentalFeatures)
         immutable2.changing
         immutable2.missing
         immutable2.status == "broken"
@@ -135,7 +139,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         metadata.status = "broken"
         metadata.contentHash = contentHash
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
 
         metadata.changing = false
         metadata.missing = false
@@ -183,7 +187,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         metadata.variants[1].files[0].name == "f1"
         metadata.variants[1].files[0].uri == "dir/f1"
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.variants.size() == 2
         immutable.variants[0].name == "api"
         immutable.variants[0].files.size() == 2
@@ -197,7 +201,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         metadata2.variants[1].name == "runtime"
         metadata2.variants[1].files.size() == 1
 
-        def immutable2 = metadata2.asImmutable()
+        def immutable2 = metadata2.asImmutable(attributesFactory, experimentalFeatures)
         immutable2.variants.size() == 2
         immutable2.variants[0].name == "api"
         immutable2.variants[0].files.size() == 2
@@ -215,7 +219,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         copy.variants[2].name == "link"
         copy.variants[2].files.empty
 
-        def immutable3 = copy.asImmutable()
+        def immutable3 = copy.asImmutable(attributesFactory, experimentalFeatures)
         immutable3.variants.size() == 3
         immutable3.variants[0].name == "api"
         immutable3.variants[0].files.size() == 2
@@ -250,12 +254,12 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         metadata.variants[1].dependencies[0].module == "m1"
         metadata.variants[1].dependencies[0].versionConstraint.preferredVersion == "v1"
 
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.variants.size() == 2
         immutable.variants[0].dependencies.size() == 2
         immutable.variants[1].dependencies.size() == 1
 
-        def immutable2 = immutable.asMutable().asImmutable()
+        def immutable2 = immutable.asMutable().asImmutable(attributesFactory, experimentalFeatures)
         immutable2.variants[0].dependencies.size() == 2
         immutable2.variants[1].dependencies.size() == 1
 
@@ -264,7 +268,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         copy.addVariant("link", attributes())
         copy.variants.size() == 3
 
-        def immutable3 = copy.asImmutable()
+        def immutable3 = copy.asImmutable(attributesFactory, experimentalFeatures)
         immutable3.variants.size() == 3
         immutable3.variants[0].dependencies.size() == 2
         immutable3.variants[1].dependencies.size() == 1
@@ -288,7 +292,7 @@ abstract class AbstractMutableModuleComponentResolveMetadataTest extends Specifi
         v2.addDependency("g3", "m3", v("v3"), [])
 
         expect:
-        def immutable = metadata.asImmutable()
+        def immutable = metadata.asImmutable(attributesFactory, experimentalFeatures)
         immutable.variantsForGraphTraversal.size() == 2
         immutable.variantsForGraphTraversal[0].name == 'api'
         immutable.variantsForGraphTraversal[0].dependencies.size() == 1

@@ -48,6 +48,7 @@ public class DefaultConfigurationMetadata implements ConfigurationMetadata {
     private final ImmutableList<String> hierarchy;
     private final DependencyMetadataRules dependencyMetadataRules;
     private final ImmutableList<ExcludeMetadata> excludes;
+    private final ImmutableAttributes attributes;
 
     // Should be final, and set in constructor
     private ImmutableList<ModuleDependencyMetadata> configDependencies;
@@ -55,7 +56,8 @@ public class DefaultConfigurationMetadata implements ConfigurationMetadata {
 
     protected DefaultConfigurationMetadata(ModuleComponentIdentifier componentId, String name, boolean transitive, boolean visible,
                                            ImmutableList<String> hierarchy, ImmutableList<? extends ModuleComponentArtifactMetadata> artifacts,
-                                           @Nullable DependencyMetadataRules dependencyMetadataRules, ImmutableList<ExcludeMetadata> excludes) {
+                                           @Nullable DependencyMetadataRules dependencyMetadataRules, ImmutableList<ExcludeMetadata> excludes,
+                                           ImmutableAttributes attributes) {
         this.componentId = componentId;
         this.name = name;
         this.transitive = transitive;
@@ -64,6 +66,7 @@ public class DefaultConfigurationMetadata implements ConfigurationMetadata {
         this.hierarchy = hierarchy;
         this.dependencyMetadataRules = dependencyMetadataRules;
         this.excludes = excludes;
+        this.attributes = attributes;
     }
 
     @Override
@@ -98,7 +101,7 @@ public class DefaultConfigurationMetadata implements ConfigurationMetadata {
 
     @Override
     public ImmutableAttributes getAttributes() {
-        return ImmutableAttributes.EMPTY;
+        return attributes;
     }
 
     @Override

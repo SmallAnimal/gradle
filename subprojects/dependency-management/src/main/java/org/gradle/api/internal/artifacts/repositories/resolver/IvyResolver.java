@@ -16,11 +16,13 @@
 package org.gradle.api.internal.artifacts.repositories.resolver;
 
 import org.gradle.api.artifacts.ComponentMetadataSupplier;
+import org.gradle.api.internal.ExperimentalFeatures;
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory;
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ModuleComponentRepositoryAccess;
 import org.gradle.api.internal.artifacts.repositories.metadata.ImmutableMetadataSources;
 import org.gradle.api.internal.artifacts.repositories.metadata.MetadataArtifactProvider;
 import org.gradle.api.internal.artifacts.repositories.transport.RepositoryTransport;
+import org.gradle.api.internal.attributes.ImmutableAttributesFactory;
 import org.gradle.api.internal.component.ArtifactType;
 import org.gradle.caching.internal.BuildCacheHasher;
 import org.gradle.internal.Factory;
@@ -53,8 +55,9 @@ public class IvyResolver extends ExternalResourceResolver<IvyModuleResolveMetada
                        ImmutableModuleIdentifierFactory moduleIdentifierFactory,
                        Factory<ComponentMetadataSupplier> componentMetadataSupplierFactory,
                        ImmutableMetadataSources repositoryContentFilter,
-                       MetadataArtifactProvider metadataArtifactProvider) {
-        super(name, transport.isLocal(), transport.getRepository(), transport.getResourceAccessor(), new ChainedVersionLister(new ResourceVersionLister(transport.getRepository())), locallyAvailableResourceFinder, artifactFileStore, moduleIdentifierFactory, repositoryContentFilter, metadataArtifactProvider);
+                       MetadataArtifactProvider metadataArtifactProvider,
+                       ImmutableAttributesFactory immutableAttributesFactory, ExperimentalFeatures experimentalFeatures) {
+        super(name, transport.isLocal(), transport.getRepository(), transport.getResourceAccessor(), new ChainedVersionLister(new ResourceVersionLister(transport.getRepository())), locallyAvailableResourceFinder, artifactFileStore, moduleIdentifierFactory, repositoryContentFilter, metadataArtifactProvider, immutableAttributesFactory, experimentalFeatures);
         this.componentMetadataSupplierFactory = componentMetadataSupplierFactory;
         this.dynamicResolve = dynamicResolve;
         this.localRepositoryAccess = new IvyLocalRepositoryAccess();

@@ -17,6 +17,7 @@ package org.gradle.api.internal.artifacts.ivyservice.modulecache;
 
 import com.google.common.base.Objects;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.internal.ExperimentalFeatures;
 import org.gradle.api.internal.artifacts.ImmutableModuleIdentifierFactory;
 import org.gradle.api.internal.artifacts.ivyservice.ArtifactCacheMetaData;
 import org.gradle.api.internal.artifacts.ivyservice.CacheLockingManager;
@@ -41,13 +42,17 @@ public class DefaultModuleMetaDataCache implements ModuleMetaDataCache {
 
     private final BuildCommencedTimeProvider timeProvider;
     private final CacheLockingManager cacheLockingManager;
+    private final ImmutableAttributesFactory immutableAttributesFactory;
+    private final ExperimentalFeatures experimentalFeatures;
 
     private final ModuleMetadataStore moduleMetadataStore;
     private PersistentIndexedCache<ModuleComponentAtRepositoryKey, ModuleMetadataCacheEntry> cache;
 
-    public DefaultModuleMetaDataCache(BuildCommencedTimeProvider timeProvider, CacheLockingManager cacheLockingManager, ArtifactCacheMetaData artifactCacheMetaData, ImmutableModuleIdentifierFactory moduleIdentifierFactory, ImmutableAttributesFactory attributesFactory, NamedObjectInstantiator instantiator) {
+    public DefaultModuleMetaDataCache(BuildCommencedTimeProvider timeProvider, CacheLockingManager cacheLockingManager, ArtifactCacheMetaData artifactCacheMetaData, ImmutableModuleIdentifierFactory moduleIdentifierFactory, ImmutableAttributesFactory attributesFactory, NamedObjectInstantiator instantiator, ExperimentalFeatures experimentalFeatures) {
         this.timeProvider = timeProvider;
         this.cacheLockingManager = cacheLockingManager;
+        this.immutableAttributesFactory = attributesFactory;
+        this.experimentalFeatures = experimentalFeatures;
 
         moduleMetadataStore = new ModuleMetadataStore(new DefaultPathKeyFileStore(artifactCacheMetaData.getMetaDataStoreDirectory()), new ModuleMetadataSerializer(attributesFactory, instantiator), moduleIdentifierFactory);
     }
@@ -82,7 +87,7 @@ public class DefaultModuleMetaDataCache implements ModuleMetaDataCache {
                     cache.remove(key);
                     return null;
                 }
-                return new DefaultCachedMetaData(entry, entry.configure(metadata), timeProvider);
+                return new DefaultCachedMetaData(entry, entry.configure(metadata, immutableAttributesFactory, experimentalFeatures), timeProvider);
             }
         });
     }

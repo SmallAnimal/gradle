@@ -47,16 +47,25 @@ public abstract class ExternalDependencyDescriptor {
     protected abstract ExternalDependencyDescriptor withRequested(ModuleComponentSelector newRequested);
 
     public List<ConfigurationMetadata> getMetadataForConfigurations(ImmutableAttributes consumerAttributes, AttributesSchemaInternal consumerSchema, ComponentIdentifier fromComponent, ConfigurationMetadata fromConfiguration, ComponentResolveMetadata targetComponent) {
-        if (!targetComponent.getVariantsForGraphTraversal().isEmpty()) {
-            // This condition shouldn't be here, and attribute matching should always be applied when the target has variants
-            // however, the schemas and metadata implementations are not yet set up for this, so skip this unless:
-            // - the consumer has asked for something specific (by providing attributes), as the other metadata types are broken for the 'use defaults' case
-            // - or the target is a component from a Maven/Ivy repo as we can assume this is well behaved
-            if (!consumerAttributes.isEmpty() || targetComponent instanceof ModuleComponentResolveMetadata) {
-                return ImmutableList.of(AttributeConfigurationSelector.selectConfigurationUsingAttributeMatching(consumerAttributes, targetComponent, consumerSchema));
-            }
+        if (useLegacyConfigurationSelection(consumerAttributes, targetComponent)) {
+            return selectLegacyConfigurations(fromComponent, fromConfiguration, targetComponent);
         }
-        return selectLegacyConfigurations(fromComponent, fromConfiguration, targetComponent);
+        return ImmutableList.of(AttributeConfigurationSelector.selectConfigurationUsingAttributeMatching(consumerAttributes, targetComponent, consumerSchema));
+    }
+
+    private boolean useLegacyConfigurationSelection(ImmutableAttributes consumerAttributes, ComponentResolveMetadata targetComponent) {
+        if (targetComponent.getVariantsForGraphTraversal().isEmpty()) {
+            //No variants defined in target
+            return true;
+        }
+        // This conditions shouldn't be here, and attribute matching should always be applied when the target has variants
+        // however, the schemas and metadata implementations are not yet set up for this, so skip this unless:
+        // - the consumer has asked for something specific (by providing attributes), as the other metadata types are broken for the 'use defaults' case
+        // - or the target is a component from a Maven/Ivy repo as we can assume this is well behaved
+        if (consumerAttributes.isEmpty() && !(targetComponent instanceof ModuleComponentResolveMetadata)) {
+            return true;
+        }
+        return false;
     }
 
     protected abstract List<ConfigurationMetadata> selectLegacyConfigurations(ComponentIdentifier fromComponent, ConfigurationMetadata fromConfiguration, ComponentResolveMetadata targetComponent);

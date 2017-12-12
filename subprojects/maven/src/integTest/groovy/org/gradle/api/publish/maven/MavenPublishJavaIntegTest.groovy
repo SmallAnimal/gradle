@@ -85,7 +85,7 @@ class MavenPublishJavaIntegTest extends AbstractMavenPublishIntegTest {
                 expectFiles "foo-1.0.jar", "publishTest-1.9.jar"
             }
             withoutModuleMetadata {
-                expectFiles "bar-1.0.jar", "foo-1.0.jar", "publishTest-1.9.jar"
+                expectFiles "foo-1.0.jar", "publishTest-1.9.jar"
             }
         }
 
@@ -536,7 +536,7 @@ class MavenPublishJavaIntegTest extends AbstractMavenPublishIntegTest {
                 expectFiles "bar-1.0.jar"
             }
             withoutModuleMetadata {
-                expectFiles "bar-1.0.jar", "foo-1.0.jar"
+                expectFiles "bar-1.0.jar"
             }
         }
         resolveRuntimeArtifacts(javaLibrary) {

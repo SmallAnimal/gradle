@@ -22,7 +22,7 @@ import org.gradle.integtests.fixtures.resolve.ResolveTestFixture
 import org.gradle.test.fixtures.maven.MavenModule
 
 class MavenBomResolveIntegrationTest extends AbstractHttpDependencyResolutionTest {
-    def resolve = new ResolveTestFixture(buildFile)
+    def resolve = new ResolveTestFixture(buildFile).expectDefaultConfiguration('runtime')
     MavenModule bom
     MavenModule moduleA
 
@@ -70,10 +70,10 @@ class MavenBomResolveIntegrationTest extends AbstractHttpDependencyResolutionTes
         then:
         resolve.expectGraph {
             root(':', ':testproject:') {
-                module("group:bom:1.0", {
-                    module("group:moduleA:2.0")
+                module("group:bom:1.0:default", {
+                    module("group:moduleA:2.0:runtime")
                 }).noArtifacts()
-                edge("group:moduleA:", "group:moduleA:2.0")
+                edge("group:moduleA:", "group:moduleA:2.0:runtime")
             }
         }
     }
@@ -133,10 +133,10 @@ class MavenBomResolveIntegrationTest extends AbstractHttpDependencyResolutionTes
         then:
         resolve.expectGraph {
             root(':', ':testproject:') {
-                module("group:bom:1.0", {
-                    module("group:moduleA:2.0")
+                module("group:bom:1.0:default", {
+                    module("group:moduleA:2.0:runtime")
                 }).noArtifacts()
-                edge("group:moduleA:", "group:moduleA:2.0")
+                edge("group:moduleA:", "group:moduleA:2.0:runtime")
             }
         }
 
@@ -148,12 +148,12 @@ class MavenBomResolveIntegrationTest extends AbstractHttpDependencyResolutionTes
         then:
         resolve.expectGraph {
             root(':', ':testproject:') {
-                module("group:bom:1.0", {
-                    module("group:moduleA:2.0") {
-                        module("group:moduleC:1.0")
+                module("group:bom:1.0:default", {
+                    module("group:moduleA:2.0:runtime") {
+                        module("group:moduleC:1.0:runtime")
                     }
                 }).noArtifacts()
-                edge("group:moduleA:", "group:moduleA:2.0")
+                edge("group:moduleA:", "group:moduleA:2.0:runtime")
             }
         }
     }
@@ -214,7 +214,7 @@ class MavenBomResolveIntegrationTest extends AbstractHttpDependencyResolutionTes
         then:
         resolve.expectGraph {
             root(':', ':testproject:') {
-                module("group:bom:1.0").noArtifacts()
+                module("group:bom:1.0:default").noArtifacts()
             }
         }
     }
